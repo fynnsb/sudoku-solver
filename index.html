@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku-Solver</title>
+    <style>
+        input {
+            height: 60px;
+            width: 60px;
+            font-size: 40px;
+            text-align: center;
+        }
+
+        #wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100vw;
+        }
+
+        .odd {
+            background-color: #d3d3d3;
+        }
+
+        button {
+            padding: 10px 30px;
+            margin: 0px 0px 20px 0px;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #2a98ff;
+            border: 0px solid transparent;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <button onclick="solve()">Solve</button>
+    </div>
+
+<script>
+
+
+    var wrapper = document.getElementById("wrapper");
+
+    for(var x = 0; x < 9; x++){
+        var div = document.createElement("div");
+
+        for(var y = 0; y < 9; y++){
+            var grid = (Math.floor(x / 3) * 3) + Math.floor(y / 3);
+            var input = document.createElement("input");
+            input.setAttribute('type', 'number');
+            if(grid % 2 == 1){
+                input.className = "odd";
+            }
+            input.setAttribute('id', x + "" + y + "" + grid); 
+            div.appendChild(input);
+        }
+        wrapper.appendChild(div);
+
+    }
+
+    function getData(){
+        var data = [];
+
+        for(var x = 0; x < 9; x++){
+            data[x] = [];
+            for(var y = 0; y < 9; y++){
+                for(var z = 0; z < 9; z++){
+                    var elem = document.getElementById(y + "" + x + "" + z);
+                    try {
+                        if(typeof elem.value !== 'undefined' && elem.value > 0){
+                            data[x][y] = [Number(elem.value), z];
+                        }else{
+                            data[x][y] = [null, z];
+                        }
+                    } catch (error) {
+                    }
+
+                }
+            }
+        }
+        return data;
+    }
+
+    function getPossible(x, y, data){
+        if(data[x][y][0] > 0){
+            return false;
+        }
+
+        var possibleArray = [true, true, true, true, true, true, true, true, true];
+
+        //CHECK COLUMN IN WHICH CELL IS LOCATED
+        for(var a = 0; a < 9; a++){
+            if(data[x][a][0] > 0){
+                possibleArray[data[x][a][0] - 1] = false;
+            }
+        }
+
+        
+        //CHECK ROW IN WHICH CELL IS LOCATED
+        for(var a = 0; a < 9; a++){
+            if(data[a][y][0] > 0){
+                possibleArray[data[a][y][0] - 1] = false;
+            }
+        }
+
+        //CHECK GRID CELL IN WHICH CELL IS LOCATED
+        for(var a = 0; a < 9; a++){
+            for(var b = 0; b < 9; b++){
+                if(data[a][b][1] == data[x][y][1] && data[a][b][0] > 0){
+                    possibleArray[data[a][b][0] - 1] = false;
+                }
+            }
+        }
+
+        possibleNumbers = [];
+
+        possibleArray.forEach(function(val, index) {
+            if(val){
+                possibleNumbers[possibleNumbers.length] = index + 1;
+            }
+        });
+
+        if(possibleNumbers.length == 1){
+            console.log(y, x, data[x][y][1], possibleNumbers);
+            document.getElementById(y + "" + x + "" + data[x][y][1]).value = possibleNumbers[0];
+            return true;
+        }
+        return false;
+    }
+
+    function loopOnce(){
+        var foundOne = false;
+        for(var x = 0; x < 9; x++){
+            for(var y = 0; y < 9; y++){
+                if(getPossible(x, y, getData())){
+                    foundOne = true;
+                }
+            }
+        }
+
+        return foundOne;
+    }
+
+    function solve() {
+        while(loopOnce()){
+
+        }
+    }
+</script>
+</body>
+</html>
